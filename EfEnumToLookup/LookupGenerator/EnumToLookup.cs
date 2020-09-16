@@ -70,6 +70,13 @@
 		public bool UseTransaction { get; set; }
 
 		/// <summary>
+		/// A list of types that should be excluded from generating lookup tables. Any
+		/// Flags enums are excluded automatically - this should be used to exclude 
+		/// other types that may not support the data in the database.
+		/// </summary>
+		public List<Type> ExcludedTypes { get; set; } = new List<Type>();
+
+		/// <summary>
 		/// Create any missing lookup tables,
 		/// enforce values in the lookup tables
 		/// by way of a T-SQL MERGE
@@ -126,8 +133,11 @@
 			// recurse through dbsets and references finding anything that uses an enum
 			var enumReferences = FindEnumReferences(context);
 
+			// Filter out any flags and specifically excluded types
+			var filteredReferences = enumReferences.Where(r => !r.EnumType.GetCustomAttributes<FlagsAttribute>().Any() && !this.ExcludedTypes.Any(t => t == r.EnumType)).ToList();
+
 			// for the list of enums generate and missing tables
-			var enums = enumReferences
+			var enums = filteredReferences
 				.Select(r => r.EnumType)
 				.Distinct()
 				.OrderBy(r => r.Name)
@@ -145,7 +155,7 @@
 			var model = new LookupDbModel
 			{
 				Lookups = lookups,
-				References = enumReferences,
+				References = filteredReferences,
 			};
 			return model;
 		}

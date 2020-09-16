@@ -1,4 +1,4 @@
-Entity Framework 6.1 Enum Lookup Table Generator
+Entity Framework 6.4 Enum Lookup Table Generator
 ================================================
 
 * License: MIT - http://opensource.org/licenses/MIT
@@ -12,7 +12,7 @@ About
 Creates lookup tables and foreign key constraints based on the enums
 used in your model.
 
-This makes up for a feature that's missing in Entity Framework 6.1.
+This makes up for a feature that's missing in Entity Framework 6.4.
 
 Usage
 -----
@@ -30,6 +30,7 @@ can be run in the test project project "[ExampleUsage](ExampleUsage)" if you wan
 
 	var enumToLookup = new EnumToLookup();
 	enumToLookup.NameFieldLength = 42; // optional, example of how to override default values
+	enumToLookup.ExcludedTypes.Add(typeof(SuspensionType)); // optional, example of how to remove specific types
 	enumToLookup.Apply(context);
 
 ### Creating sql scripts
